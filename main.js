@@ -1,9 +1,16 @@
 const dotenv = require("dotenv");
 const fs = require("fs");
+const express=require('express');
 const Discord = require("discord.js");
 
 dotenv.config();
+var app = express();
+const port=process.env.PORT ?? 3000;
 
+app.listen(port,()=>{
+
+  console.log("listening")
+})
 const client = new Discord.Client({
   partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
