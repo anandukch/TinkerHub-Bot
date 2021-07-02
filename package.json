@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon main.js"
   },
-  "author": "irene",
+  "author": " ",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.3",
