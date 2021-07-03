@@ -2,10 +2,6 @@ module.exports = {
   name: "reactionrole",
   description: "Set up a reaction role on message",
   async execute(message, args, Discord, client) {
-    console.log('aa');
-
-
-
     const channel = process.env.CHANNEL_ID;
 
     function setRoleHandler(data) {
@@ -22,15 +18,15 @@ module.exports = {
       iotRole: setRoleHandler("hardware-iot"),
     };
 
-    const emoj = {
+    const emojis = {
       mlEmoji: ["🤖", setRole.mlRole],
       webDevEmoji: ["💻", setRole.webDevRole],
       appDevEmoji: ["📱", setRole.appDev],
       uiEmoji: ["🌈", setRole.designRole],
       openSourceEmoji: ["🛡️", setRole.opensourceRole],
       coding: ["⌨", setRole.coderRole],
-      iotEmoji: ["🛠️", setRole.iotRole],
       backendDevEmoji: ["🔧", setRole.backendRole],
+      iotEmoji: ["🛠️", setRole.iotRole],
     };
 
     let embed = new Discord.MessageEmbed()
@@ -38,14 +34,14 @@ module.exports = {
       .setTitle("Choose your stacks")
       .setDescription(
         "React to the corresponding emojis to get your roles.\n\n" +
-          `${emoj.mlEmoji[0]} - data-science-ml \n` +
-          `${emoj.webDevEmoji[0]} - web-development \n` +
-          `${emoj.appDevEmoji[0]} - app-development \n` +
-          `${emoj.uiEmoji[0]} - design-ui-ux \n` +
-          `${emoj.openSourceEmoji[0]} - open-source \n` +
-          `${emoj.coding[0]} - coding \n` +
-          `${emoj.backendDevEmoji[0]} - backend-dev \n` +
-          `${emoj.iotEmoji[0]} - hardware-iot \n`
+          `${emojis.mlEmoji[0]} - data-science-ml \n` +
+          `${emojis.webDevEmoji[0]} - web-development \n` +
+          `${emojis.appDevEmoji[0]} - app-development \n` +
+          `${emojis.uiEmoji[0]} - design-ui-ux \n` +
+          `${emojis.openSourceEmoji[0]} - open-source \n` +
+          `${emojis.coding[0]} - coding \n` +
+          `${emojis.backendDevEmoji[0]} - backend-dev \n` +
+          `${emojis.iotEmoji[0]} - hardware-iot \n`
       );
 
     let messageEmbed = await message.channel.send(embed);
@@ -54,28 +50,25 @@ module.exports = {
       return Object.keys(object).find((key) => object[key][0] === value);
     }
 
-    messageEmbed.react(emoj.mlEmoji[0]);
-    messageEmbed.react(emoj.webDevEmoji[0]);
-    messageEmbed.react(emoj.appDevEmoji[0]);
-    messageEmbed.react(emoj.uiEmoji[0]);
-    messageEmbed.react(emoj.openSourceEmoji[0]);
-    messageEmbed.react(emoj.coding[0]);
-    messageEmbed.react(emoj.backendDevEmoji[0]);
-    messageEmbed.react(emoj.iotEmoji[0]);
+    for (const key in emojis) {
+      if (emojis.hasOwnProperty(key)) {
+        messageEmbed.react(emojis[key][0]);
+      }
+    }
 
-    async function addrct(role, reaction, user) {
+    async function addReaction(role, reaction, user) {
       await reaction.message.guild.members.cache
         .get(user.id)
-        .roles.add(emoj[role][1]);
+        .roles.add(emojis[role][1]);
     }
-    async function rmvrct(role, reaction, user) {
+    async function removeReaction(role, reaction, user) {
       await reaction.message.guild.members.cache
         .get(user.id)
-        .roles.remove(emoj[role][1]);
+        .roles.remove(emojis[role][1]);
     }
-    const addReaction = {
-      add: addrct,
-      remove: rmvrct,
+    const reactionController = {
+      add: addReaction,
+      remove: removeReaction,
     };
 
     client.on("messageReactionAdd", async (reaction, user) => {
@@ -86,8 +79,8 @@ module.exports = {
 
       if (reaction.message.channel.id === channel) {
         if (reaction.emoji.name) {
-          await addReaction["add"](
-            getKeyByValue(emoj, reaction.emoji.name),
+          await reactionController["add"](
+            getKeyByValue(emojis, reaction.emoji.name),
             reaction,
             user
           );
@@ -104,8 +97,8 @@ module.exports = {
 
       if (reaction.message.channel.id === channel) {
         if (reaction.emoji.name) {
-          await addReaction["remove"](
-            getKeyByValue(emoj, reaction.emoji.name),
+          await reactionController["remove"](
+            getKeyByValue(emojis, reaction.emoji.name),
             reaction,
             user
           );
